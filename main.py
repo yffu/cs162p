@@ -1,15 +1,15 @@
 import sys
 
-def display_lines(file_path):
+def display_lines(file_path, search_sequence):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             lines = [line.strip() for line in file]
 
             if lines:
-                print("Errors logged:")
+                print(search_sequence + "s logged:")
 
                 for line in lines:
-                    if ("INFO" in line):
+                    if (search_sequence in line):
                         print(line)
             else:
                 print("No lines found.")
@@ -22,13 +22,14 @@ def display_lines(file_path):
 
 
 def main():
-    print(sys.argv)
-    if len(sys.argv) != 2:
-        print("Usage: python3 program.py <file_path>")
+    # print(sys.argv)
+    if len(sys.argv) != 3:
+        print("Usage: python3 program.py <file_path> <search_sequence>")
         return
 
     file_path = sys.argv[1]
-    display_lines(file_path)
+    search_sequence = sys.argv[2]
+    display_lines(file_path, search_sequence)
 
 
 if __name__ == "__main__":
