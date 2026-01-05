@@ -1,0 +1,6 @@
+[INFO] Server started at 09:00
+[ERROR] Connection failed to database
+[INFO] User login successful
+[WARNING] Disk space running low
+[ERROR] Unable to load configuration
+[INFO] Backup completed

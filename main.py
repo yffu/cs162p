@@ -1,3 +1,5 @@
+import sys
+
 def display_lines(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
@@ -5,11 +7,10 @@ def display_lines(file_path):
 
             if lines:
                 print("Errors logged:")
-                # print("File contains:")
 
-                for i in range(len(lines)):
-                    if lines[i].split()[0] == "[ERROR]":
-                        print(lines[i])
+                for line in lines:
+                    if ("INFO" in line):
+                        print(line)
             else:
                 print("No lines found.")
 
@@ -21,7 +22,14 @@ def display_lines(file_path):
 
 
 def main():
-    display_lines("server_logs.txt")
+    print(sys.argv)
+    if len(sys.argv) != 2:
+        print("Usage: python3 program.py <file_path>")
+        return
+
+    file_path = sys.argv[1]
+    display_lines(file_path)
+
 
 if __name__ == "__main__":
     main()
