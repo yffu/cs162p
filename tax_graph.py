@@ -27,7 +27,7 @@ class TaxGraph:
 
         self.axes.clear()
         self.axes.set_title('Tax and Net Pay vs. Biweekly Income for Married Filing Status')
-        self.axes.stackplot(*tax_coord, labels = ['Net Pay', 'Federal Tax'], colors = ['#002A84', '#F2A900'])
+        self.axes.stackplot(*tax_coord, labels = ['Net Pay', 'Federal Tax'], colors = ['#002A84', '#F2A900'], edgecolor='white')
         self.axes.legend(loc='upper left')
         self.axes.set_xlabel('Biweekly Adjusted Gross Income')
         self.canvas.draw()
@@ -69,14 +69,14 @@ class TaxGraph:
 
     @classmethod
     def calc_tax(cls, filing_status, adjusted_gross, tax_config):
-        # gross_pay - pre-tax deductions - standard_deduction = taxable_income
-        # tax_amt = base_withholding + (taxable_income - over) * rate)
-        tax_bracket = tax_config['withholding_schedules'][filing_status]
+        tax_brackets = tax_config['withholding_schedules'][filing_status]
         std_ded = tax_config['standard_deductions'][filing_status]
+        # gross_pay - pre-tax deductions - standard_deduction = taxable_income
         taxable_income = max(adjusted_gross - std_ded, 0)
         tax_amt = None
-        for tb in tax_bracket:
+        for tb in tax_brackets:
             if taxable_income >= tb[0] and (tb[1] is None or taxable_income <= tb[1]):
+                # tax_amt = base_withholding + (taxable_income - over) * rate)
                 tax_amt = round(tb[2] + (taxable_income - tb[0]) * tb[3], 2)
                 break
         #print('filing_status', filing_status, 'adjusted_gross', adjusted_gross, 'taxable_income', taxable_income, 'tax_amt', tax_amt)
