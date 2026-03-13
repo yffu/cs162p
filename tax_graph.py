@@ -14,8 +14,16 @@ class TaxGraph:
         root.geometry('960x540')
         row_frame = tk.Frame(root)
         row_frame.pack()
-        fig = Figure()
 
+        label = tk.Label(row_frame, text = 'Filing Status: ')
+        label.pack(side = 'left', anchor = 'center')
+        filing_statuses = self.tax_config['filing_statuses']
+        filing_stat = tk.StringVar(root)
+        filing_stat.set(filing_statuses[0])
+        dropdown = tk.OptionMenu(row_frame, filing_stat, *filing_statuses, command=self.update_plot)
+        dropdown.pack(side = 'right', anchor = 'center')
+
+        fig = Figure()
         self.axes = fig.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(fig, master=root)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
