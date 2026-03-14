@@ -18,7 +18,7 @@ class TaxGraph:
 
         label = tk.Label(row_frame, text = 'Filing Status: ')
         label.pack(side = 'left', anchor = 'center')
-        filing_statuses = self.tax_config['filing_statuses']
+        filing_statuses = TaxGraph._tax_config['filing_statuses']
         filing_stat = tk.StringVar(root)
         filing_stat.set(filing_statuses[0])
         dropdown = tk.OptionMenu(row_frame, filing_stat, *filing_statuses, command=self.update_plot)
@@ -30,6 +30,7 @@ class TaxGraph:
         self.axes.set_xlabel('Biweekly Adjusted Gross Income')
         self.canvas = FigureCanvasTkAgg(fig, master=root)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        self.tax_pts_store = dict()
         self.update_plot(filing_stat.get())
         root.mainloop()
 
@@ -42,13 +43,17 @@ class TaxGraph:
         self.canvas.draw()
 
     def get_coordinates_by_fs(self, filing_status):
-        tax_coord = list()
-        adjusted_gross_hi = int(TaxGraph._tax_config['withholding_schedules'][filing_status][-1][0] * 1.2)
-        x_range = range(0, adjusted_gross_hi, 50)
-        y_tax_fed = [self.calc_tax(filing_status, x, TaxGraph._tax_config) for x in x_range]
-        y_net_pay = [x_grs - y_tax for x_grs, y_tax in zip(x_range, y_tax_fed)]
-        tax_coord = [x_range, y_net_pay, y_tax_fed]
-        return tax_coord
+        tax_pts = self.tax_pts_store.get(filing_status)
+        if tax_pts:
+            print('tax points found in store')
+        else:
+            adjusted_gross_hi = int(TaxGraph._tax_config['withholding_schedules'][filing_status][-1][0] * 1.2)
+            x_range = range(0, adjusted_gross_hi, 50)
+            y_tax_fed = [self.calc_tax(filing_status, x, TaxGraph._tax_config) for x in x_range]
+            y_net_pay = [x_grs - y_tax for x_grs, y_tax in zip(x_range, y_tax_fed)]
+            tax_pts = [x_range, y_net_pay, y_tax_fed]
+            self.tax_pts_store[filing_status] = tax_pts
+        return tax_pts
 
 
     @property
@@ -66,6 +71,14 @@ class TaxGraph:
     @canvas.setter
     def canvas(self, c):
         self.__canvas = c
+
+    @property
+    def tax_pts_store(self):
+        return self.__tax_pts_store
+
+    @tax_pts_store.setter
+    def tax_pts_store(self, tp):
+        self.__tax_pts_store = tp
         
     ''' TypeError: 'method' object is not subscriptable
     @property
