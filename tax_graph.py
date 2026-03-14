@@ -28,7 +28,7 @@ class TaxGraph:
         self.axes = fig.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(fig, master=root)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-        self.update_plot('married_joint')
+        self.update_plot(filing_stat.get())
         root.mainloop()
 
     def update_plot(self, filing_status):
