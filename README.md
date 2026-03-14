@@ -32,7 +32,7 @@ This project uses the following libraries and assets.
 |:------------------------------------- |:---------------------------------|:--------------------|
 | [matplotlib](https://matplotlib.org)  | PSF (Python Software Foundation) | chart visualization |
 | [Tkinter](https://tkdocs.com/)        | CC BY-NC-SA 4.0                  | gui toolkit         |
-| [json](https://tkdocs.com/)           | PSF (Python Software Foundation) | data format         |
+| [json](https://docs.python.org/3/library/json.html)           | PSF (Python Software Foundation) | data format         |
 ---
 
 ## Tutorials, Documentation, and Code Referenced
