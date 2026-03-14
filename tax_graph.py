@@ -38,7 +38,7 @@ class TaxGraph:
         tax_coord = self.get_coordinates_by_fs(filing_status)
 
         self.axes.clear()
-        self.axes.stackplot(*tax_coord, labels = ['Net Pay', 'Federal Tax'], colors = ['#002A84', '#F2A900'], edgecolor='white')
+        self.axes.stackplot(*tax_coord, labels = ['Net Pay', 'Federal Tax', 'State (CA) Tax'], colors = ['#002A84', '#F2A900', '#FFC133'], edgecolor='white')
         self.axes.legend(loc='upper left')
         self.canvas.draw()
 
@@ -109,5 +109,30 @@ class TaxGraph:
         return tax_amt
 
 
+class TaxGraphSte(TaxGraph):
+
+    _tax_config_ste = None
+
+    @classmethod
+    def tax_config_ste(cls, fn_config):
+        if cls._tax_config is None:
+            with open(fn_config) as f:
+                cls._tax_config_ste = json.load(f)
+
+    def __init__(self):
+        TaxGraphSte.tax_config_ste('tax_config_ca.json')
+        super().__init__()
+
+    def get_coordinates_by_fs(self, filing_status):
+        tax_pts = super().get_coordinates_by_fs(filing_status)
+        if len(tax_pts) == 3:
+            y_tax_ste = [self.calc_tax(filing_status, x, TaxGraphSte._tax_config_ste) for x in tax_pts[0]]
+            y_net_pay = [y_net - y_tax for y_net, y_tax in zip(tax_pts[1], y_tax_ste)]
+            tax_pts[1] = y_net_pay
+            tax_pts.append(y_tax_ste)
+        return tax_pts
+        
+
 if __name__ == '__main__':
-    tax_graph = TaxGraph()
+    #tax_graph = TaxGraph()
+    tax_graph = TaxGraphSte()
