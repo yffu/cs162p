@@ -15,12 +15,12 @@ This program will display a stacked line chart of net pay and tax amount for a r
 ```
    python tax_graph.py
 ```
-
+3. Select a value in 'Filing Status' dropdown to display the graph for that filing status.
 ---
 
 ## Videos
 - [Code Demo](https://youtu.be/ClrJi3jS8HU)
-- [Code Walkthrough](https://www.youtube.com/watch?v=...)
+- [Code Walkthrough](https://youtu.be/PnJfQ-UDA8g)
 
 ---
 
