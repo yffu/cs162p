@@ -104,8 +104,7 @@ class TaxGraph:
             if taxable_income >= tb[0] and (tb[1] is None or taxable_income <= tb[1]):
                 # tax_amt = base_withholding + (taxable_income - over) * rate)
                 tax_amt = round(tb[2] + (taxable_income - tb[0]) * tb[3], 2)
-                break
-        #print('filing_status', filing_status, 'adjusted_gross', adjusted_gross, 'taxable_income', taxable_income, 'tax_amt', tax_amt)
+                breakgi
         return tax_amt
 
 
