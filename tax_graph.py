@@ -9,7 +9,7 @@ class TaxGraph:
     
     def __init__(self):
 
-        TaxGraph.tax_config('tax_config_fed.json')
+        TaxGraph.load_tax_config('tax_config_fed.json')
         root = tk.Tk()
         root.title('Tax Graph')
         root.geometry('960x540')
@@ -18,7 +18,7 @@ class TaxGraph:
 
         label = tk.Label(row_frame, text = 'Filing Status: ')
         label.pack(side = 'left', anchor = 'center')
-        filing_statuses = TaxGraph._tax_config['filing_statuses']
+        filing_statuses = self.tax_config['filing_statuses']
         filing_stat = tk.StringVar(root)
         filing_stat.set(filing_statuses[0])
         dropdown = tk.OptionMenu(row_frame, filing_stat, *filing_statuses, command=self.update_plot)
@@ -47,9 +47,9 @@ class TaxGraph:
         if tax_pts:
             print('tax points found in store')
         else:
-            adjusted_gross_hi = int(TaxGraph._tax_config['withholding_schedules'][filing_status][-1][0] * 1.2)
+            adjusted_gross_hi = int(self.tax_config['withholding_schedules'][filing_status][-1][0] * 1.2)
             x_range = range(0, adjusted_gross_hi, 50)
-            y_tax_fed = [self.calc_tax(filing_status, x, TaxGraph._tax_config) for x in x_range]
+            y_tax_fed = [self.calc_tax(filing_status, x, self.tax_config) for x in x_range]
             y_net_pay = [x_grs - y_tax for x_grs, y_tax in zip(x_range, y_tax_fed)]
             tax_pts = [x_range, y_net_pay, y_tax_fed]
             self.tax_pts_store[filing_status] = tax_pts
@@ -79,15 +79,13 @@ class TaxGraph:
     @tax_pts_store.setter
     def tax_pts_store(self, tps):
         self.__tax_pts_store = tps
-        
-    ''' TypeError: 'method' object is not subscriptable
+
     @property
     def tax_config(self):
-        return TaxGraph._tax_config
-    '''
+        return self._tax_config
     
     @classmethod
-    def tax_config(cls, fn_config):
+    def load_tax_config(cls, fn_config):
         if cls._tax_config is None:
             with open(fn_config) as f:
                 cls._tax_config = json.load(f)
@@ -113,23 +111,27 @@ class TaxGraphSte(TaxGraph):
     _tax_config_ste = None
 
     @classmethod
-    def tax_config_ste(cls, fn_config):
+    def load_tax_config_ste(cls, fn_config):
         if cls._tax_config is None:
             with open(fn_config) as f:
                 cls._tax_config_ste = json.load(f)
 
     def __init__(self):
-        TaxGraphSte.tax_config_ste('tax_config_ca.json')
+        TaxGraphSte.load_tax_config_ste('tax_config_ca.json')
         super().__init__()
 
     def get_coordinates_by_fs(self, filing_status):
         tax_pts = super().get_coordinates_by_fs(filing_status)
         if len(tax_pts) == 3:
-            y_tax_ste = [self.calc_tax(filing_status, x, TaxGraphSte._tax_config_ste) for x in tax_pts[0]]
+            y_tax_ste = [self.calc_tax(filing_status, x, self.tax_config_ste) for x in tax_pts[0]]
             y_net_pay = [y_net - y_tax for y_net, y_tax in zip(tax_pts[1], y_tax_ste)]
             tax_pts[1] = y_net_pay
             tax_pts.append(y_tax_ste)
         return tax_pts
+
+    @property
+    def tax_config_ste(self):
+        return self._tax_config_ste
         
 
 if __name__ == '__main__':
