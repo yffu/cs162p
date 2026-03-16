@@ -116,8 +116,8 @@ class TaxGraphSte(TaxGraph):
             with open(fn_config) as f:
                 cls._tax_config_ste = json.load(f)
 
-    def __init__(self):
-        TaxGraphSte.load_tax_config_ste('tax_config_ca.json')
+    def __init__(self, fn_config):
+        TaxGraphSte.load_tax_config_ste(fn_config)
         super().__init__()
 
     def get_coordinates_by_fs(self, filing_status):
@@ -135,5 +135,5 @@ class TaxGraphSte(TaxGraph):
         
 
 if __name__ == '__main__':
-    # tax_graph = TaxGraph()
-    tax_graph = TaxGraphSte()
+    tax_graph = TaxGraph()
+    # tax_graph = TaxGraphSte('tax_config_ca.json')
