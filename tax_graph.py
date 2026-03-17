@@ -1,3 +1,13 @@
+"""
+Tax Graph
+_____________
+This program will display a stacked line chart of net pay and tax amount for a range of biweekly wage amounts.
+
+Author: Yuanfang Fu
+Date: March 2026
+Dependencies: tkinter, matplotlib, json
+"""
+
 import json
 import tkinter as tk
 from matplotlib.figure import Figure
@@ -8,7 +18,7 @@ class TaxGraph:
     _tax_config = None
     
     def __init__(self):
-
+        """Creates tk window, dropdown selector, matplotlib graph, and enters mainloop to listen for changes"""
         TaxGraph.load_tax_config('tax_config_fed.json')
         root = tk.Tk()
         root.title('Tax Graph')
@@ -35,6 +45,7 @@ class TaxGraph:
         root.mainloop()
 
     def update_plot(self, filing_status):
+        """Gets tax coordinates for the filing status, and updates the graph with the coordinates"""
         tax_coord = self.get_coordinates_by_fs(filing_status)
 
         self.axes.clear()
@@ -43,6 +54,8 @@ class TaxGraph:
         self.canvas.draw()
 
     def get_coordinates_by_fs(self, filing_status):
+        """Checks if tax coordinates exists in store for the filing status - if not create list of adjusted gross as x values,
+        Calculates tax from adjusted gross, and net pay as difference of adjusted gross and tax"""
         tax_pts = self.tax_pts_store.get(filing_status)
         if tax_pts:
             print('tax points found in store')
@@ -86,6 +99,7 @@ class TaxGraph:
     
     @classmethod
     def load_tax_config(cls, fn_config):
+        """Load federal tax configuration from json to class variable"""
         if cls._tax_config is None:
             with open(fn_config) as f:
                 cls._tax_config = json.load(f)
@@ -93,6 +107,7 @@ class TaxGraph:
 
     @classmethod
     def calc_tax(cls, filing_status, adjusted_gross, tax_config):
+        """Calculates taxable income from adjusted gross, finds the correct withholding rate and calculates tax withholding"""
         tax_brackets = tax_config['withholding_schedules'][filing_status]
         std_ded = tax_config['standard_deductions'][filing_status]
         # gross_pay - pre-tax deductions - standard_deduction = taxable_income
@@ -112,15 +127,19 @@ class TaxGraphSte(TaxGraph):
 
     @classmethod
     def load_tax_config_ste(cls, fn_config):
+        """Load state tax configuration from json to class variable"""
         if cls._tax_config is None:
             with open(fn_config) as f:
                 cls._tax_config_ste = json.load(f)
 
     def __init__(self, fn_config):
+        """"Calls init method of superclass, and just loads additional state tax configuration"""
         TaxGraphSte.load_tax_config_ste(fn_config)
         super().__init__()
 
     def get_coordinates_by_fs(self, filing_status):
+        """Calls get coordinates of superclass, calculates list of state tax withholding from state tax config,
+        subtracts state tax withholding from net pay and returns the updated tax points"""
         tax_pts = super().get_coordinates_by_fs(filing_status)
         if len(tax_pts) == 3:
             y_tax_ste = [self.calc_tax(filing_status, x, self.tax_config_ste) for x in tax_pts[0]]
@@ -135,5 +154,5 @@ class TaxGraphSte(TaxGraph):
         
 
 if __name__ == '__main__':
-    tax_graph = TaxGraph()
-    # tax_graph = TaxGraphSte('tax_config_ca.json')
+    # tax_graph = TaxGraph()
+    tax_graph = TaxGraphSte('tax_config_ca.json')
